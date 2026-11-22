@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "JSON 工具：格式化、对比、转 TypeScript",
+  "short_name": "JSON 工具",
+  "version": "1.1.0",
+  "description": "格式化、压缩、修复和对比 JSON，生成 TypeScript、Zod、JSON Schema，解析和拼接 URL 参数。所有处理都在本机完成，不上传任何数据。",
+  "minimum_chrome_version": "102",
+  "action": {
+    "default_title": "打开 JSON 工具",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "storage"
+  ]
+}

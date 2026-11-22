@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Node / 构建
+node_modules/
+dist/
+*.log
+
+# 编辑器
+.vscode/
+.idea/
+
+# 环境变量与密钥
+.env
+.env.*
+*.pem
+*.key
