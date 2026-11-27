@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatBytes, ParseResult } from '../lib/parse';
 import { SAMPLES, Sample } from '../lib/samples';
 import { normalizeInput, prettyIfJson, repairInput } from '../lib/transform';
-import { IconAlert, IconCheck } from './icons';
+import { IconAlert, IconCheck, IconIndent, IconTrash } from './icons';
 import { JsonEditor } from './JsonEditor';
 import { InputBar } from './InputBar';
 
@@ -101,11 +101,13 @@ export function InputPane({ input, onInput, parsed, fieldCount, onSample, format
                 actions={[
                     {
                         label: '格式化',
+                        icon: <IconIndent />,
+                        emphasis: 'primary',
                         onClick: format,
                         disabled: !input.trim(),
                         title: '格式化输入；格式有问题时会先自动修复（Shift+Alt+F）',
                     },
-                    { label: '清空', onClick: clear, disabled: !input },
+                    { label: '清空', icon: <IconTrash />, emphasis: 'destructive', onClick: clear, disabled: !input },
                 ]}
                 onFind={() => setFindReq((n) => n + 1)}
                 findDisabled={!input}

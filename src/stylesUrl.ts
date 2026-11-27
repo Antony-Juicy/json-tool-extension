@@ -1,5 +1,8 @@
 /** v34: the URL 参数 tab (input, parameter table, URL parts). */
 export const URL_CSS = `
+
+.url-mode { flex: 1; display: flex; flex-direction: column; }
+
 .url-editor textarea { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; overflow-y: auto; overflow-x: hidden; line-height: 22px; }
 
 /* result bar: filter field */

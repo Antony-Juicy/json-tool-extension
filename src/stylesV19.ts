@@ -113,6 +113,21 @@ export const V19_CSS = `
 .foot-opts .check { font-size: 12.5px; gap: 6px; }
 
 .ibar .actgroup button:hover:not(:disabled) { background: var(--soft); box-shadow: none; }
+.ibar .actgroup .input-action {
+  height: 30px; padding: 0 9px; gap: 6px; border: 1px solid #D5D2C9; border-radius: 7px; background: #fff;
+}
+.ibar .actgroup .input-action:first-child { margin-left: 0; }
+.ibar .actgroup .input-action svg { width: 14px; height: 14px; flex: none; }
+.ibar .actgroup .input-action[data-emphasis="primary"] {
+  background: #EEF1FD; border-color: #C9D3F5; color: var(--accent); font-weight: 600;
+}
+.ibar .actgroup .input-action:hover:not(:disabled) { background: #F7F6F3; border-color: #B9B6AD; }
+.ibar .actgroup .input-action[data-emphasis="primary"]:hover:not(:disabled) { background: #E0E6FC; border-color: #A9B8F4; }
+.ibar .actgroup .input-action[data-emphasis="destructive"]:hover:not(:disabled) {
+  background: #FFF1EF; border-color: #E8B4AE; color: #A1281C;
+}
+.ibar .actgroup .input-action:disabled { background: #F8F7F4; border-color: #E3E0D8; color: #767D86; }
+
 
 /* (v28) header: status only when it needs attention; settings behind a gear after the tabs */
 .settings-status:empty { display: none; }

@@ -1,6 +1,6 @@
 {
   "name": "json-tool-extension",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Chrome 扩展：格式化、对比 JSON，生成 TypeScript / Zod / JSON Schema，解析和拼接 URL 参数",

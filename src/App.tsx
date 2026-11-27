@@ -44,32 +44,56 @@ function Shell() {
                     <h1 className="title">JSON 工具</h1>
                     <SettingsStatus />
                 </div>
-                <nav className="tabs nav" role="tablist" aria-label="工具">
-                    {VIEWS.map((v) => (
-                        <button
-                            key={v.id}
-                            type="button"
-                            role="tab"
-                            className="tab"
-                            aria-selected={view === v.id}
-                            onClick={() => setView(v.id)}
-                        >
-                            {v.label}
-                        </button>
-                    ))}
+                <nav className="tool-nav" aria-label="工具">
+                    <div
+                        className="tabs nav"
+                        role="tablist"
+                        aria-label="工具"
+                        onKeyDown={(event) => {
+                            const current = VIEWS.findIndex((item) => item.id === view);
+                            const last = VIEWS.length - 1;
+                            const next = {
+                                ArrowLeft: (current + last) % VIEWS.length,
+                                ArrowRight: (current + 1) % VIEWS.length,
+                                Home: 0,
+                                End: last,
+                            }[event.key];
+                            if (next === undefined) return;
+                            event.preventDefault();
+                            const id = VIEWS[next].id;
+                            setView(id);
+                            document.getElementById(`tool-tab-${id}`)?.focus();
+                        }}
+                    >
+                        {VIEWS.map((v) => (
+                            <button
+                                key={v.id}
+                                type="button"
+                                role="tab"
+                                id={`tool-tab-${v.id}`}
+                                aria-controls={`tool-panel-${v.id}`}
+                                tabIndex={view === v.id ? 0 : -1}
+                                className="tab"
+                                aria-selected={view === v.id}
+                                onClick={() => setView(v.id)}
+                            >
+                                {v.label}
+                            </button>
+                        ))}
+                    </div>
                     <SettingsMenu />
                 </nav>
             </header>
-            <div hidden={view !== 'format'}>
+            <div className="tool-panel" id="tool-panel-format" role="tabpanel" aria-labelledby="tool-tab-format" hidden={view !== 'format'}>
                 <FormatTool />
             </div>
-            <div hidden={view !== 'diff'}>
+            <div className="tool-panel" id="tool-panel-diff" role="tabpanel" aria-labelledby="tool-tab-diff" hidden={view !== 'diff'}>
                 <DiffTool />
             </div>
-            <div hidden={view !== 'types'}>
+            <div className="tool-panel" id="tool-panel-types" role="tabpanel" aria-labelledby="tool-tab-types" hidden={view !== 'types'}>
                 <TypeTool />
             </div>
-            <div hidden={view !== 'url'}>
+            <div className="tool-panel" id="tool-panel-url" role="tabpanel" aria-labelledby="tool-tab-url" hidden={view !== 'url'}>
                 <UrlTool />
             </div>
         </>

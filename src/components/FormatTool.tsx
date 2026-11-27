@@ -13,7 +13,7 @@ import { usePersisted } from '../lib/settings';
 import { FormatOutput } from './FormatOutput';
 import { Seg } from './Seg';
 import { InputBar } from './InputBar';
-import { IconAlert, IconCheck } from './icons';
+import { IconAlert, IconCheck, IconCompress, IconIndent, IconTrash } from './icons';
 
 const MODES: { v: Mode; label: string }[] = [
     { v: 'format', label: '格式化' },
@@ -131,7 +131,7 @@ export function FormatTool() {
     return (
         <>
             <div className="toolbar" role="toolbar" aria-label="格式化选项">
-                <Seg<Mode> label="操作" value={mode} onChange={setMode} options={MODES} />
+                <Seg<Mode> label="输出模式" prefix="输出模式" value={mode} onChange={setMode} options={MODES} />
                 <span className="tb-sep" aria-hidden="true" />
                 {(mode === 'format' || mode === 'unescape') && (
                     <label className="inline-field">
@@ -214,18 +214,21 @@ export function FormatTool() {
                     <InputBar
                         actions={[
                             {
-                                label: '格式化',
+                                label: '格式化输入',
+                                icon: <IconIndent />,
+                                emphasis: 'primary',
                                 onClick: () => rewriteInput(false),
                                 disabled: !input.trim(),
                                 title: '格式化输入框里的 JSON，有格式问题时会先修复（Shift+Alt+F）',
                             },
                             {
-                                label: '压缩',
+                                label: '压缩输入',
+                                icon: <IconCompress />,
                                 onClick: () => rewriteInput(true),
                                 disabled: !input.trim(),
                                 title: '把输入框里的 JSON 压缩成一行',
                             },
-                            { label: '清空', onClick: clear, disabled: !input },
+                            { label: '清空', icon: <IconTrash />, emphasis: 'destructive', onClick: clear, disabled: !input },
                         ]}
                         onFind={() => setFindReq((n) => n + 1)}
                         findDisabled={!input}

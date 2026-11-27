@@ -27,7 +27,7 @@ import { UrlParamTable } from './UrlParamRows';
 import { UrlBuild, BuildSeed } from './UrlBuild';
 import { Seg } from './Seg';
 import { ARRAY_STYLES, ArrayStyle, EXISTING_MODES, ExistingMode, SpaceStyle } from '../lib/urlBuild';
-import { IconCheck, IconCopy, IconDownload } from './icons';
+import { IconBraces, IconCheck, IconCopy, IconDownload, IconReplace, IconTrash } from './icons';
 
 type View = 'table' | 'json' | 'text';
 const VIEW_IDS: View[] = ['table', 'json', 'text'];
@@ -56,6 +56,7 @@ export function UrlTool() {
     const setStash = (s: { text: string; reason: string } | null) => setHist((h) => (s ? [...h.slice(-29), s] : []));
     const [sampleId, setSampleId] = useState('');
     const [filter, setFilter] = useState('');
+    const [optionsOpen, setOptionsOpen] = useState(false);
     const [encoding, setEncoding] = usePersisted<string>('url.encoding', 'auto', ENCODING_IDS);
     const [plusAsSpace, setPlusAsSpace] = usePersisted('url.plus', true);
     const [trimPaste, setTrimPaste] = usePersisted('url.trim', true);
@@ -208,78 +209,81 @@ export function UrlTool() {
                         { v: 'build', label: '拼接' },
                     ]}
                 />
-                <span className="tb-sep" aria-hidden="true" />
-                <label className="inline-field">
-                    <span>字符编码</span>
-                    <select className="text" value={encoding} onChange={(e) => setEncoding(e.target.value)}>
-                        {ENCODINGS.map((g) => (
-                            <optgroup key={g.group} label={g.group}>
-                                {g.items.map((i) => (
-                                    <option key={i.id} value={i.id}>
-                                        {i.label}
-                                    </option>
-                                ))}
-                            </optgroup>
-                        ))}
-                    </select>
-                </label>
-                <span className="tb-sep" aria-hidden="true" />
-                <label className="inline-field">
-                    <span>键排序</span>
-                    <select className="text" value={order} onChange={(e) => setOrder(e.target.value as SortMode)}>
-                        <option value="none">保持原顺序</option>
-                        <option value="asc">升序 A → Z</option>
-                        <option value="desc">降序 Z → A</option>
-                    </select>
-                </label>
-                {mode === 'parse' && (
-                    <label className="check" title="表单提交的参数里，加号表示空格（application/x-www-form-urlencoded）；关掉后加号按原样显示">
-                        <input type="checkbox" checked={plusAsSpace} onChange={(e) => setPlusAsSpace(e.target.checked)} />
-                        把 + 当作空格
+                <button type="button" className="btn sm url-options-toggle" aria-expanded={optionsOpen} aria-controls="url-options" onClick={() => setOptionsOpen(!optionsOpen)}>
+                    更多选项
+                </button>
+                <div className="url-options" id="url-options" data-expanded={optionsOpen}>
+                    <label className="inline-field">
+                        <span>字符编码</span>
+                        <select className="text" value={encoding} onChange={(e) => setEncoding(e.target.value)}>
+                            {ENCODINGS.map((g) => (
+                                <optgroup key={g.group} label={g.group}>
+                                    {g.items.map((i) => (
+                                        <option key={i.id} value={i.id}>
+                                            {i.label}
+                                        </option>
+                                    ))}
+                                </optgroup>
+                            ))}
+                        </select>
                     </label>
-                )}
-                {mode === 'build' && (
-                    <>
-                        <label className="inline-field" title="同名的键有多个值（或标记为数组）时怎么写">
-                            <span>数组写法</span>
-                            <select className="text" value={arrayStyle} onChange={(e) => setArrayStyle(e.target.value as ArrayStyle)}>
-                                {ARRAY_STYLES.map((a) => (
-                                    <option key={a.v} value={a.v}>
-                                        {a.label}
-                                    </option>
-                                ))}
-                            </select>
+                    <label className="inline-field">
+                        <span>键排序</span>
+                        <select className="text" value={order} onChange={(e) => setOrder(e.target.value as SortMode)}>
+                            <option value="none">保持原顺序</option>
+                            <option value="asc">升序 A → Z</option>
+                            <option value="desc">降序 Z → A</option>
+                        </select>
+                    </label>
+                    {mode === 'parse' && (
+                        <label className="check" title="表单提交的参数里，加号表示空格（application/x-www-form-urlencoded）；关掉后加号按原样显示">
+                            <input type="checkbox" checked={plusAsSpace} onChange={(e) => setPlusAsSpace(e.target.checked)} />
+                            把 + 当作空格
                         </label>
-                        <label className="inline-field" title="空格写成 %20，或表单风格的 +（UTF-16 下只能用 %20）">
-                            <span>空格写成</span>
-                            <select className="text" value={spaceStyle} onChange={(e) => setSpaceStyle(e.target.value as SpaceStyle)}>
-                                <option value="percent">%20</option>
-                                <option value="plus">+</option>
-                            </select>
-                        </label>
-                        <label className="inline-field" title="基础链接里已经有参数时怎么处理">
-                            <span>已有参数</span>
-                            <select className="text" value={existing} onChange={(e) => setExisting(e.target.value as ExistingMode)}>
-                                {EXISTING_MODES.map((m) => (
-                                    <option key={m.v} value={m.v}>
-                                        {m.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-                        <label className="check" title="值为空的参数不写进链接">
-                            <input type="checkbox" checked={skipEmpty} onChange={(e) => setSkipEmpty(e.target.checked)} />
-                            跳过空值
-                        </label>
-                    </>
-                )}
-                <label className="check" title="粘贴时自动去掉内容开头和结尾的空格、空行，可以撤销">
-                    <input type="checkbox" checked={trimPaste} onChange={(e) => setTrimPaste(e.target.checked)} />
-                    粘贴时去掉首尾空格
-                </label>
+                    )}
+                    {mode === 'build' && (
+                        <>
+                            <label className="inline-field" title="同名的键有多个值（或标记为数组）时怎么写">
+                                <span>数组写法</span>
+                                <select className="text" value={arrayStyle} onChange={(e) => setArrayStyle(e.target.value as ArrayStyle)}>
+                                    {ARRAY_STYLES.map((a) => (
+                                        <option key={a.v} value={a.v}>
+                                            {a.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label className="inline-field" title="空格写成 %20，或表单风格的 +（UTF-16 下只能用 %20）">
+                                <span>空格写成</span>
+                                <select className="text" value={spaceStyle} onChange={(e) => setSpaceStyle(e.target.value as SpaceStyle)}>
+                                    <option value="percent">%20</option>
+                                    <option value="plus">+</option>
+                                </select>
+                            </label>
+                            <label className="inline-field" title="基础链接里已经有参数时怎么处理">
+                                <span>已有参数</span>
+                                <select className="text" value={existing} onChange={(e) => setExisting(e.target.value as ExistingMode)}>
+                                    {EXISTING_MODES.map((m) => (
+                                        <option key={m.v} value={m.v}>
+                                            {m.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label className="check" title="值为空的参数不写进链接">
+                                <input type="checkbox" checked={skipEmpty} onChange={(e) => setSkipEmpty(e.target.checked)} />
+                                跳过空值
+                            </label>
+                        </>
+                    )}
+                    <label className="check" title="粘贴时自动去掉内容开头和结尾的空格、空行，可以撤销">
+                        <input type="checkbox" checked={trimPaste} onChange={(e) => setTrimPaste(e.target.checked)} />
+                        粘贴时去掉首尾空格
+                    </label>
+                </div>
             </div>
 
-            <div hidden={mode !== 'parse'}>
+            <div className="url-mode" hidden={mode !== 'parse'}>
             <main className="main">
                 <section className="card" aria-label="输入">
                     <div className="card-head">
@@ -316,21 +320,27 @@ export function UrlTool() {
                         <div className="actgroup" role="group" aria-label="输入操作">
                             <button
                                 type="button"
+                                className="input-action"
+                                data-emphasis="primary"
                                 disabled={!parsed}
                                 onClick={() => rewrite(rewriteDecoded(input, opts), '已把参数解码成可读的文字')}
                                 title="把每个键和值解码成可读的文字；会引起歧义的 % & = # + 仍保持转义"
                             >
+                                <IconReplace />
                                 解码
                             </button>
                             <button
                                 type="button"
+                                className="input-action"
                                 disabled={!parsed}
                                 onClick={() => rewrite(rewriteEncoded(input, opts), '已按 UTF-8 重新编码参数')}
                                 title="先按所选字符编码解码，再统一按 UTF-8 重新编码（GBK 等参数会被转成 UTF-8）"
                             >
+                                <IconBraces />
                                 编码
                             </button>
-                            <button type="button" onClick={clear} disabled={!input}>
+                            <button type="button" className="input-action" data-emphasis="destructive" onClick={clear} disabled={!input}>
+                                <IconTrash />
                                 清空
                             </button>
                         </div>
@@ -532,7 +542,7 @@ export function UrlTool() {
                 </section>
             </main>
             </div>
-            <div hidden={mode !== 'build'}>
+            <div className="url-mode" hidden={mode !== 'build'}>
                 <UrlBuild
                     encoding={encoding}
                     arrayStyle={arrayStyle}

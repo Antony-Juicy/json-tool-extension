@@ -8,7 +8,7 @@ body {
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
 }
-.app { max-width: 1480px; margin: 0 auto; padding: 22px 24px 28px; }
+.app { max-width: 1480px; margin: 0 auto; padding: 22px 24px 0; }
 .mono, .code, textarea.input { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; }
 
 .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 6px 24px; flex-wrap: wrap; border-bottom: 1px solid #E3E1DA; }
@@ -310,7 +310,7 @@ mark.hit.cur { background: #FFB547; box-shadow: 0 0 0 1px #B45309; }
   .diff-nav { margin-left: 0; }
 }
 @media (max-width: 600px) {
-  .app { padding: 16px 14px 24px; }
+  .app { padding: 16px 14px 0; }
   .text { width: 100%; }
   .opts .field.grow { width: 100%; }
   textarea.input, .code, .empty, .editor, .errbox, .tree-wrap, .main.stack .editor, .main.stack .code, .main.stack .empty, .main.stack .errbox { height: 360px; }

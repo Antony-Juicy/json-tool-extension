@@ -3,8 +3,9 @@
  * foot) so the input and the result line up and read as one instrument. Appended last.
  */
 export const LAYOUT_CSS = `
-:root { --card-border: #DEDBD2; --card-h: 720px; --soft: #F3F2EE; }
-.app { max-width: 1520px; }
+:root { --card-border: #DEDBD2; --soft: #F3F2EE; }
+.app { max-width: 1520px; min-height: 100vh; display: flex; flex-direction: column; }
+.tool-panel { flex: 1; display: flex; flex-direction: column; }
 
 /* ---------- segmented controls: soft track, raised selection ---------- */
 .seg { height: 30px; padding: 2px; gap: 2px; border: 0; border-radius: 8px; background: var(--soft); overflow: visible; }
@@ -32,14 +33,38 @@ export const LAYOUT_CSS = `
 .opts .field > .lbl { font-size: 12.5px; }
 .opts .checks { height: auto; gap: 12px; }
 
+/* Keep the common controls visible and give expanded options their own row. */
+.toolbar-options, .url-options { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.toolbar-options { flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--rule); }
+.url-options-toggle.btn, .url-result-jump.btn { display: none; }
+.tool-nav { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.tool-nav .nav { min-width: 0; }
+.tool-nav .nav .tab { flex: none; white-space: nowrap; }
+.tool-nav .nav .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.diff-workspace-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.diff-card.view-split, .diff-card.view-list { overflow: clip; }
+.diff-card .diff-head { position: sticky; top: 0; z-index: 4; }
+.diff-inputs[hidden] + .diff-card { flex: 1 0 auto; }
+
+@media (max-width: 960px) {
+  .url-options-toggle.btn, .url-result-jump.btn { display: inline-flex; }
+  .url-options { flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--rule); }
+  .url-options[data-expanded="false"] { display: none; }
+  .url-options .inline-field select { min-width: 0; max-width: 100%; }
+}
+@media (max-width: 600px) {
+  .tool-nav { width: 100%; }
+  .tool-nav .nav { overflow-x: auto; scrollbar-width: thin; }
+  .tool-nav .nav .tab { padding-inline: 8px; font-size: 13px; }
+}
+
 /* ---------- panes as cards ---------- */
-.main { margin-top: 14px; gap: 16px; }
+.main { flex: 1; grid-auto-rows: minmax(340px, 1fr); margin-top: 14px; gap: 16px; }
 .card {
-  display: flex; flex-direction: column; min-width: 0; height: var(--card-h);
+  display: flex; flex-direction: column; min-width: 0; min-height: 0;
   background: #fff; border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden;
   box-shadow: 0 1px 2px rgba(31, 35, 40, 0.04);
 }
-.main.stack .card { height: 540px; }
 .card.has-error { border-color: #E8B4AE; }
 .card.has-warn { border-color: #E9C98A; }
 .card-head {
@@ -50,6 +75,8 @@ export const LAYOUT_CSS = `
 .card-meta { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .card-actions { margin-left: auto; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
 .card-body { position: relative; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+/* Keep editor and code scrolling local while tables and forms can grow with their contents. */
+.tool-panel > .main > .card > .card-body, .diff-inputs .card-body { contain: size; }
 .card-body > .editor, .card-body > .code, .card-body > .tree-wrap, .card-body > .errbox, .card-body > .empty {
   flex: 1 1 auto; height: auto !important; min-height: 0; border: 0; border-radius: 0; box-shadow: none; margin: 0;
 }
@@ -196,12 +223,9 @@ mark.ihit.cur { background: #FFC94D; box-shadow: inset 0 0 0 1px #C98500; }
 .find { top: 8px; right: 14px; }
 
 @media (max-width: 960px) {
-  :root { --card-h: 580px; }
-  .main.stack .card { height: var(--card-h); }
   .tb-spacer { display: none; }
 }
 @media (max-width: 600px) {
-  :root { --card-h: 500px; }
   .tb-sep { display: none; }
   .toolbar { gap: 8px 12px; }
   .toolbar .root-name { width: 150px; }

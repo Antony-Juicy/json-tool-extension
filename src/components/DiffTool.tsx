@@ -8,7 +8,7 @@ import { InputBar } from './InputBar';
 import { Seg } from './Seg';
 import { DiffResult, DiffView, SideError } from './DiffResult';
 import { InputIssue, PatchApplyResult } from './PatchApplyResult';
-import { IconAlert, IconCheck, IconSwap } from './icons';
+import { IconAlert, IconCheck, IconIndent, IconTrash, IconSwap } from './icons';
 import { usePersisted } from '../lib/settings';
 
 type Side = 'a' | 'b';
@@ -16,6 +16,7 @@ type DiffMode = 'compare' | 'apply';
 
 export function DiffTool() {
     const [a, setA] = useState('');
+    const [inputsCollapsed, setInputsCollapsed] = useState(false);
     const [b, setB] = useState('');
     const [patchText, setPatchText] = useState('');
     const [mode, setMode] = usePersisted<DiffMode>('diff.mode', 'compare', ['compare', 'apply']);
@@ -92,11 +93,15 @@ export function DiffTool() {
     };
 
     const loadSample = () => {
+        setInputsCollapsed(false);
         snapshot('已载入示例');
         setA(DIFF_SAMPLE.a);
         if (apply) setPatchText(APPLY_SAMPLE);
         else setB(DIFF_SAMPLE.b);
     };
+
+    const resultReady = !!pa?.ok && (apply ? !!patchRead?.ok : !!pb?.ok);
+    const hideInputs = resultReady && inputsCollapsed;
 
     const issues: InputIssue[] = [];
     if (errA) issues.push({ who: 'json', line: errA.line, col: errA.col, message: errA.message });
@@ -142,12 +147,16 @@ export function DiffTool() {
                     actions={[
                         {
                             label: '格式化',
+                            icon: <IconIndent />,
+                            emphasis: 'primary',
                             onClick: formatPatch,
                             disabled: !patchText.trim(),
                             title: '格式化补丁，有格式问题时会先修复（Shift+Alt+F）',
                         },
                         {
                             label: '清空',
+                            icon: <IconTrash />,
+                            emphasis: 'destructive',
                             onClick: () => {
                                 snapshot('已清空 JSON Patch');
                                 setPatchText('');
@@ -226,12 +235,16 @@ export function DiffTool() {
                     actions={[
                         {
                             label: '格式化',
+                            icon: <IconIndent />,
+                            emphasis: 'primary',
                             onClick: () => formatSide(side),
                             disabled: !text.trim(),
                             title: '格式化，有格式问题时会先修复（Shift+Alt+F）',
                         },
                         {
                             label: '清空',
+                            icon: <IconTrash />,
+                            emphasis: 'destructive',
                             onClick: () => {
                                 snapshot(`已清空${title}`);
                                 if (side === 'a') setA('');
@@ -301,7 +314,10 @@ export function DiffTool() {
                 <Seg<DiffMode>
                     label="模式"
                     value={mode}
-                    onChange={setMode}
+                    onChange={(next) => {
+                        setInputsCollapsed(false);
+                        setMode(next);
+                    }}
                     options={[
                         { v: 'compare', label: '对比两份 JSON' },
                         { v: 'apply', label: '应用补丁' },
@@ -372,13 +388,29 @@ export function DiffTool() {
                 </div>
             </div>
 
-            <div className="diff-inputs">
+            {resultReady && (
+                <div className="diff-workspace-actions">
+                    <button type="button" className="btn sm" aria-expanded={!hideInputs} aria-controls="diff-inputs" onClick={() => setInputsCollapsed(!hideInputs)}>
+                        {hideInputs ? '展开输入' : '收起输入'}
+                    </button>
+                    {!hideInputs && (
+                        <button type="button" className="btn sm" onClick={() => {
+                            const target = document.getElementById('diff-result');
+                            target?.focus({ preventScroll: true });
+                            target?.scrollIntoView({ block: 'start' });
+                        }}>
+                            {apply ? '查看应用结果' : '跳到差异'}
+                        </button>
+                    )}
+                </div>
+            )}
+            <div className="diff-inputs" id="diff-inputs" hidden={hideInputs}>
                 {pane('a')}
                 {apply ? patchPane() : pane('b')}
             </div>
 
             {apply ? (
-                <section className="card diff-card" aria-label="应用结果">
+                <section className="card diff-card" id="diff-result" aria-label="应用结果" tabIndex={-1}>
                     <div className="card-head">
                         <h2 className="card-title">应用结果</h2>
                         <span className="card-meta">把补丁按顺序应用到原 JSON</span>
@@ -395,6 +427,7 @@ export function DiffTool() {
                             onJump={(who) => (who === 'json' ? jump('a') : jumpPatch())}
                             onUseResult={(text) => {
                                 snapshot('已把结果写回原 JSON');
+                                setInputsCollapsed(false);
                                 setA(text);
                             }}
                             onLoadSample={loadSample}
@@ -402,7 +435,7 @@ export function DiffTool() {
                     </div>
                 </section>
             ) : (
-                <section className={`card diff-card view-${view}`} aria-label="对比结果">
+                <section className={`card diff-card view-${view}`} id="diff-result" aria-label="对比结果" tabIndex={-1}>
                     <div className="card-head">
                         <h2 className="card-title">对比结果</h2>
                         <div className="vtabs" role="tablist" aria-label="结果视图">

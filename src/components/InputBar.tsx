@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { IconSearch } from './icons';
 
 export interface InputAction {
@@ -5,6 +6,8 @@ export interface InputAction {
     onClick: () => void;
     disabled?: boolean;
     title?: string;
+    icon?: ReactNode;
+    emphasis?: 'primary' | 'destructive';
 }
 
 /**
@@ -28,7 +31,16 @@ export function InputBar({
         <div className="rbar ibar">
             <div className="actgroup" role="group" aria-label="输入操作">
                 {actions.map((a) => (
-                    <button key={a.label} type="button" onClick={a.onClick} disabled={a.disabled} title={a.title}>
+                    <button
+                        key={a.label}
+                        type="button"
+                        className={a.icon ? 'input-action' : undefined}
+                        data-emphasis={a.emphasis}
+                        onClick={a.onClick}
+                        disabled={a.disabled}
+                        title={a.title}
+                    >
+                        {a.icon}
                         {a.label}
                     </button>
                 ))}

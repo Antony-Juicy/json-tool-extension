@@ -8,6 +8,22 @@ const base = {
     'aria-hidden': true,
 };
 
+export const IconIndent = () => (
+    <svg {...base}>
+        <path d="M3 3.5h10M7 8h6M3 12.5h10M3 6.5 4.5 8 3 9.5" />
+    </svg>
+);
+export const IconCompress = () => (
+    <svg {...base}>
+        <path d="M3 8h10M8 2v3m-2-2 2 2 2-2M8 14v-3m-2 2 2-2 2 2" />
+    </svg>
+);
+export const IconTrash = () => (
+    <svg {...base}>
+        <path d="M3 4.5h10M6 4.5v-2h4v2m2 0-.6 9H4.6l-.6-9M6.5 7.5v3.3m3-3.3v3.3" />
+    </svg>
+);
+
 export const IconCopy = () => (
     <svg {...base}>
         <rect x="5" y="5" width="8.5" height="8.5" rx="1.5" />

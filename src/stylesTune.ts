@@ -120,8 +120,7 @@ select.text {
 .actgroup button { display: inline-flex; align-items: center; gap: 5px; }
 .actgroup button svg { width: 13px; height: 13px; }
 .toolbar .opts-status { height: 30px; padding: 0 4px; }
-.diff-inputs { gap: 16px; margin-top: 14px; }
-.diff-inputs .card { height: 420px; }
+.diff-inputs { flex: 1; grid-auto-rows: minmax(280px, 1fr); gap: 16px; margin-top: 14px; }
 .side-tag { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 10px; font-size: 11.5px; white-space: nowrap; }
 .side-tag.old { background: #FFF1EF; color: #A1281C; }
 .side-tag.new { background: #EEF9F1; color: #17702F; }
@@ -143,9 +142,6 @@ select.text {
 .diff-card .sum-chip { height: 24px; }
 .diff-card .patch-ops, .diff-card .patch-out .code, .diff-card .apply-diff .dsplit, .diff-card .apply-diff .dlist { box-shadow: none; }
 
-@media (max-width: 960px) {
-  .diff-inputs .card { height: 340px; }
-}
 @media (max-width: 600px) {
   .gutter { width: 52px; min-width: 52px; padding-right: 18px; }
   .tb-sep { display: none; }

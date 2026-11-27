@@ -18,7 +18,7 @@ import { EmptyState } from './EmptyState';
 import { toast } from './Toast';
 import { UrlParamTable } from './UrlParamRows';
 import { BuildRows } from './UrlBuildRows';
-import { IconCheck, IconCopy } from './icons';
+import { IconCheck, IconCopy, IconDownload, IconTrash } from './icons';
 
 export interface BuildSeed {
     n: number;
@@ -231,13 +231,24 @@ export function UrlBuild({ encoding, arrayStyle, spaceStyle, skipEmpty, existing
                 </div>
                 <div className="rbar ibar">
                     <div className="actgroup" role="group" aria-label="拼接操作">
-                        <button type="button" onClick={() => setImportOpen((v) => !v)} aria-expanded={importOpen} title="粘贴 a=1&b=2、每行 key=value、整条 URL 或 JSON 对象，批量变成参数">
+                        <button type="button" className="input-action" data-emphasis="primary" onClick={() => setImportOpen((v) => !v)} aria-expanded={importOpen} title="粘贴 a=1&b=2、每行 key=value、整条 URL 或 JSON 对象，批量变成参数">
+                            <IconDownload />
                             批量导入
                         </button>
-                        <button type="button" onClick={clear} disabled={isEmpty}>
+                        <button type="button" className="input-action" data-emphasis="destructive" onClick={clear} disabled={isEmpty}>
+                            <IconTrash />
                             清空
                         </button>
                     </div>
+                    {result.url && (
+                        <button type="button" className="btn sm url-result-jump" onClick={() => {
+                            const target = document.getElementById('url-build-result');
+                            target?.focus({ preventScroll: true });
+                            target?.scrollIntoView({ block: 'start' });
+                        }}>
+                            查看结果
+                        </button>
+                    )}
                 </div>
                 <div className="card-body">
                     <div className="bd-body">
@@ -348,7 +359,7 @@ export function UrlBuild({ encoding, arrayStyle, spaceStyle, skipEmpty, existing
                 </div>
             </section>
 
-            <section className="card" aria-label="拼接结果">
+            <section className="card" id="url-build-result" aria-label="拼接结果" tabIndex={-1}>
                 <div className="card-head">
                     <h2 className="card-title">拼接结果</h2>
                     {result.url && <span className="card-meta">{result.url.length} 个字符</span>}

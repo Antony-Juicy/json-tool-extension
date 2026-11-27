@@ -152,7 +152,6 @@ export function JsonEditor({
         }
         onChange(next);
     };
-    const gutter = useRef<HTMLDivElement>(null);
     const ta = useRef<HTMLTextAreaElement | null>(null);
     const mirror = useRef<HTMLDivElement>(null);
     const findInput = useRef<HTMLInputElement>(null);
@@ -230,32 +229,9 @@ export function JsonEditor({
 
     const caret = value && caretLine >= 0 && caretLine < count ? caretLine : -1;
 
-    // gutter: one text run per block, with spans for the error line and the caret line
-    const gutterContent = useMemo(() => {
-        const marks = new Map<number, string>();
-        if (focused && caret >= 0) marks.set(caret + 1, 'cur');
-        if (errorLine && errorLine <= count) marks.set(errorLine, 'bad');
-        const sorted = [...marks.keys()].sort((a, b) => a - b);
-        const out: ReactNode[] = [];
-        let from = 1;
-        for (const ln of sorted) {
-            if (ln > from) out.push(seq(from, ln - 1) + '\n');
-            out.push(
-                <span key={ln} className={marks.get(ln)}>
-                    {ln}
-                </span>,
-            );
-            if (ln < count) out.push('\n');
-            from = ln + 1;
-        }
-        if (from <= count) out.push(seq(from, count));
-        return out;
-    }, [count, errorLine, caret, focused]);
-
     const syncScroll = () => {
         const el = ta.current;
         if (!el) return;
-        if (gutter.current) gutter.current.scrollTop = el.scrollTop;
         if (mirror.current) mirror.current.style.transform = `translate(${-el.scrollLeft}px, ${-el.scrollTop}px)`;
     };
 
@@ -392,9 +368,6 @@ export function JsonEditor({
             className={`editor${errorLine ? (tone === 'warn' ? ' warn' : ' err') : ''}${rich && value ? ' rich' : ''}${className ? ' ' + className : ''}`}
             data-search-scope=""
         >
-            <div className="gutter" ref={gutter} aria-hidden="true">
-                {gutterContent}
-            </div>
             <div className="ed-area">
                 {mirrorRows && (
                     <div className="ed-mirror" aria-hidden="true">
@@ -456,10 +429,4 @@ export function JsonEditor({
             </div>
         </div>
     );
-}
-
-function seq(a: number, b: number) {
-    const arr: number[] = [];
-    for (let i = a; i <= b; i++) arr.push(i);
-    return arr.join('\n');
 }
